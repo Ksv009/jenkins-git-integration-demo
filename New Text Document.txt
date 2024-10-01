@@ -1,0 +1,37 @@
+const axios = require('axios');
+
+// Jira instance URL and API credentials
+const JIRA_URL = 'https://your-jira-instance.atlassian.net';
+const API_TOKEN = 'your_api_token'; // Replace with your API token
+const EMAIL = 'your_email@example.com'; // Replace with your email associated with the API token
+
+// Function to create a new Jira project
+async function createJiraProject(projectKey, projectName) {
+    const url = `${JIRA_URL}/rest/api/3/project`;
+    const auth = Buffer.from(`${EMAIL}:${API_TOKEN}`).toString('base64');
+
+    const data = {
+        key: projectKey,
+        name: projectName,
+        projectTypeKey: 'software', // 'business', 'ops', or 'software'
+        lead: EMAIL, // Optional: Project lead, can be an email or user key
+        description: 'Project created via API'
+    };
+
+    try {
+        const response = await axios.post(url, data, {
+            headers: {
+                'Authorization': `Basic ${auth}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        console.log('Project created successfully:', response.data);
+    } catch (error) {
+        console.error('Error creating project:', error.response ? error.response.data : error.message);
+    }
+}
+
+// Example usage
+const projectKey = 'NEWKEY'; // Replace with your project key
+const projectName = 'New Project'; // Replace with your project name
+createJiraProject(projectKey, projectName);
